@@ -5,6 +5,8 @@ import {
   getDoctorProfile,
   getSingleDoctor,
   updateDoctor,
+  getAllDoctorByAdmin,
+  updateDoctorStatusByAdmin
 } from "../controllers/doctorController.js";
 import { authenticate, restrict } from "../auth/verifyToken.js";
 import reviewRoute from "./review.js";
@@ -28,5 +30,16 @@ router.delete("/:id", authenticate, restrict(["doctor"]), deleteDoctor);
 
 // get doctor profile route
 router.get("/profile/me", authenticate, restrict(["doctor"]), getDoctorProfile);
+
+// get all doctor (admin only)
+router.get(
+  "/admin/getAllDoctors",
+  authenticate,
+  restrict(["admin"]),
+  getAllDoctorByAdmin
+);
+// delete doctor
+router.delete("/admin/:id", authenticate, restrict(["admin"]), deleteDoctor);
+router.put("/admin/:id", authenticate, restrict(["admin"]), updateDoctorStatusByAdmin);
 
 export default router;

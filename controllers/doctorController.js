@@ -37,7 +37,21 @@ export const getAllDoctor = async (req, res) => {
     });
   }
 };
+export const getAllDoctorByAdmin = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select("-password");
 
+    res.status(200).json({
+      success: true,
+      data: doctors,
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: "Doctor was not found",
+    });
+  }
+};
 
 // get single doctor
 export const getSingleDoctor = async (req, res) => {
@@ -116,7 +130,9 @@ export const getDoctorProfile = async (req, res) => {
 
     const { password, ...rest } = doctor._doc;
 
-    const appointments = await Booking.find({ doctor: doctorId }).populate('user');
+    const appointments = await Booking.find({ doctor: doctorId }).populate(
+      "user"
+    );
 
     res.status(200).json({
       success: true,
@@ -127,6 +143,33 @@ export const getDoctorProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong, cann't get user",
+    });
+  }
+};
+
+// update doctor status by admin
+export const updateDoctorStatusByAdmin = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          isApproved: "approved",
+        },
+      },
+      { new: true }
+    )
+
+    res.status(200).json({
+      success: true,
+      message: "Doctor status updated successfully",
+      data: updatedDoctor,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Doctor status updated Failed",
     });
   }
 };
