@@ -39,7 +39,7 @@ export const restrict = roles => async (req, res, next) => {
     if (doctor) {
         user = doctor;
     }
-
+    
     if (!roles.includes(user?.role)) {
         return res.status(401).json({ message: "You are not authorized" });
     }

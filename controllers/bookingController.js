@@ -61,3 +61,20 @@ export const getCheckoutSession = async (req, res) => {
       .json({ success: false, message: "Error for creating checkout session" });
   }
 };
+
+export const deleteBooking = async (req, res) => {
+  const id = req.params.id;
+  try {
+    await Booking.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete",
+    });
+  }
+};
