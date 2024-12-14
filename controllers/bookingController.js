@@ -4,14 +4,18 @@ import Booking from "../models/BookingSchema.js";
 import Stripe from "stripe";
 
 export const getCheckoutSession = async (req, res) => {
-
   try {
     // get currently booked doctor
     const doctor = await Doctor.findById(req.params.doctorId);
     const user = await User.findById(req.userId);
 
     if (doctor.ticketPrice < 100) {
-      return res.status(400).json({ success: false, message: "Minimum ticket price must be at least 50 BDT" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Minimum ticket price must be at least 50 BDT",
+        });
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -47,7 +51,6 @@ export const getCheckoutSession = async (req, res) => {
       ticketPrice: doctor.ticketPrice,
       session: session.id,
     });
-    
 
     await booking.save();
 
@@ -55,7 +58,7 @@ export const getCheckoutSession = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Successfully Paid", session });
   } catch (err) {
-    console.error('Error creating checkout session:', err);
+    console.error("Error creating checkout session:", err);
     res
       .status(500)
       .json({ success: false, message: "Error for creating checkout session" });
@@ -75,6 +78,32 @@ export const deleteBooking = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to delete",
+    });
+  }
+};
+
+export const updateBooking = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status: "approved",
+        },
+      },
+      { new: true }
+    )
+
+    res.status(200).json({
+      success: true,
+      message: "Booking status updated successfully",
+      data: updatedBooking,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Booking status updated Failed",
     });
   }
 };

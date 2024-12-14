@@ -27,12 +27,11 @@ export const authenticate = async (req, res, next) => {
 
 export const restrict = roles => async (req, res, next) => {
     const userId = req.userId;
-
     let user;
-
+    
     const patient = await User.findById(userId);
     const doctor = await Doctor.findById(userId);
-
+    
     if (patient) {
         user = patient;
     }
@@ -43,6 +42,5 @@ export const restrict = roles => async (req, res, next) => {
     if (!roles.includes(user?.role)) {
         return res.status(401).json({ message: "You are not authorized" });
     }
-
     next();
 }
